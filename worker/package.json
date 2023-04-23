@@ -1,0 +1,12 @@
+{
+  "name": "lambda-inception-worker",
+  "version": "1.0.0",
+  "description": "Worker for the Lambda Inception architecture",
+  "type": "module",
+  "main": "worker.js",
+  "author": "Gianluca Fabrizi",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "got": "^12.5.3"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "name": "lambda-inception-manager",
+  "version": "1.0.0",
+  "description": "Manager for the Lambda Inception architecture",
+  "type": "module",
+  "main": "manager.js",
+  "author": "Gianluca Fabrizi",
+  "license": "GPL-3.0",
+  "scripts": {
+    "preinstall": "rm -f worker.zip && cp -a ../../../worker . && cd worker && npm install && zip -r ../worker.zip package.json package-lock.json worker.js node_modules && cd .. && rm -rf worker"
+  }
+}

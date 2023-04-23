@@ -1,0 +1,98 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  lambda-inception-sam
+
+  SAM version of the Lambda Inception Architectural Pattern
+
+Resources:
+  LambdaInceptionManagerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: "lambda-inception"
+      CodeUri: manager/
+      Handler: manager.handler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Timeout: 30
+      Role: !GetAtt LambdaInceptionManager.Arn
+      FunctionUrlConfig:
+        AuthType: AWS_IAM
+      Environment:
+        Variables:
+          LAMBDA_INCEPTION_WORKER_ROLE: !GetAtt LambdaInceptionWorker.Arn
+
+  LambdaInceptionInvoker:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: lambda-inception-invoker
+      Policies:
+        - PolicyName: LambdaInceptionInvoke
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunctionUrl
+                Resource: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:lambda-inception
+
+  LambdaInceptionWorker:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: LambdaInceptionWorker
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+
+  LambdaInceptionManager:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: LambdaInceptionManager
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: LambdaInceptionPassRole
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - iam:PassRole
+                Resource: !Sub arn:aws:iam::${AWS::AccountId}:role/LambdaInceptionWorker
+        - PolicyName: LambdaInceptionCreateFunction
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:CreateFunction
+                Resource: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:*
+        - PolicyName: LambdaInceptionDeleteFunction
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:DeleteFunction
+                Resource: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:*
+        - PolicyName: LambdaInvokeFunction
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - lambda:InvokeFunction
+                Resource: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:*
