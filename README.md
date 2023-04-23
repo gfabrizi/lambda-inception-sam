@@ -1,5 +1,8 @@
-# Lambda Inception Architectural Pattern
-Original link to dev.to post for explaination:
+# Lambda Inception Architectural Pattern (SAM version)
+Post on dev.to:
+https://dev.to/gfabrizi/porting-lambda-functions-to-aws-sam-3hl7
+
+Original link to dev.to post for explaination on the js code:
 https://dev.to/gfabrizi/lambda-inception-architectural-pattern-f67
 
 ## Instructions:
